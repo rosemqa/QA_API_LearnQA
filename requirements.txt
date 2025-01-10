@@ -1,0 +1,7 @@
+allure-pytest
+pytest~=7.2.1
+requests~=2.32.0
+Faker
+pytest-check
+python-dotenv~=1.0.1
+pydantic
