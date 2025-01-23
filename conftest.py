@@ -48,3 +48,10 @@ def login_new_user(create_new_user):
     }
     new_user_data |= new_user_info
     return new_user_data
+
+
+@pytest.fixture()
+def delete_new_user(login_new_user):
+    yield
+    user_data = login_new_user
+    api_user.delete_user_by_id(user_data['user_id'], user_data['auth_cookie'], user_data['token'])

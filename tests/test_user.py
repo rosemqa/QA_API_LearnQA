@@ -82,7 +82,7 @@ class TestUser(BaseTest):
             f'Unexpected response content - {response_text}'
 
     @allure.description('Can edit all data of the newly created user')
-    def test_edit_just_created_user(self, login_new_user, check):
+    def test_edit_just_created_user(self, login_new_user, delete_new_user, check):
         new_user_data = login_new_user
         user_id = new_user_data['user_id']
         auth_cookie = new_user_data['auth_cookie']
@@ -106,14 +106,14 @@ class TestUser(BaseTest):
 
     @allure.description('Unauthorized user can not edit a user info by ID')
     @allure.tag('negative')
-    def test_edit_user_as_not_authed(self, login_new_user):
+    def test_edit_user_as_not_authed(self, login_new_user, delete_new_user):
         new_user_data = login_new_user
         edit = self.api_user.edit_user_by_id(new_user_data['user_id'])
         assert edit.error == 'Auth token not supplied', 'Check the error value'
 
     @allure.description('Authorized user can not edit another user')
     @allure.tag('negative')
-    def test_edit_another_user(self, login_new_user):
+    def test_edit_another_user(self, login_new_user, delete_new_user):
         new_user_data = login_new_user
         other_user_id = self.api_user.create_user()[0]
         auth_cookie = new_user_data['auth_cookie']
@@ -125,7 +125,7 @@ class TestUser(BaseTest):
     @allure.description('Field values cannot be changed to value that is one symbol long')
     @pytest.mark.parametrize('field', ['username', 'firstName', 'lastName'])
     @allure.tag('negative')
-    def test_edit_user_with_too_short_name(self, login_new_user, field):
+    def test_edit_user_with_too_short_name(self, login_new_user, delete_new_user, field):
         new_user_data = login_new_user
         edit = self.api_user.edit_user_with_specific_data(
             new_user_data['user_id'],
@@ -143,7 +143,7 @@ class TestUser(BaseTest):
         assert login['user_id'] == int(new_user_data['user_id']), 'Check user ID value for Login method'
 
     @allure.description('Authorized user can get his user info by ID')
-    def test_get_user_as_authed(self, check, login_new_user):
+    def test_get_user_as_authed(self, check, login_new_user, delete_new_user):
         new_user_data = login_new_user
         user_id = new_user_data['user_id']
         user = self.api_user.get_auth_user_by_id(user_id, new_user_data['auth_cookie'], new_user_data['token'])
@@ -159,7 +159,7 @@ class TestUser(BaseTest):
             assert user.email == new_user_data['email'], 'Check email in response'
 
     @allure.description('Authorized user can not get another user info by ID except for the user name')
-    def test_get_another_user(self, login_new_user):
+    def test_get_another_user(self, login_new_user, delete_new_user):
         new_user_data = login_new_user
         another_user_id = AuthDataDefaultUser.USER_ID
         user = self.api_user.get_user_by_id(another_user_id, new_user_data['auth_cookie'], new_user_data['token'])
@@ -172,7 +172,7 @@ class TestUser(BaseTest):
         assert user.username == AuthDataDefaultUser.USERNAME, 'Check username value'
 
     @allure.description('Can delete the just created user')
-    def test_delete_user(self, login_new_user):
+    def test_delete_user(self, login_new_user, delete_new_user):
         new_user_data = login_new_user
         user_id = login_new_user['user_id']
 
@@ -185,7 +185,7 @@ class TestUser(BaseTest):
         assert get == 'User not found', 'Unexpected response text from Get method'
 
     @allure.description('Authorized user can not delete another user')
-    def test_delete_another_user(self, login_new_user):
+    def test_delete_another_user(self, login_new_user, delete_new_user):
         new_user_data = login_new_user
         other_user_id = self.api_user.create_user()[0]
         auth_cookie = new_user_data['auth_cookie']
