@@ -23,4 +23,5 @@ class Environment:
             raise Exception(f'Unknown value of ENV variable {self.env}')
 
 
-BASE_URL = Environment()
+ENV_OBJECT = Environment()
+BASE_URL = ENV_OBJECT.get_base_url()
