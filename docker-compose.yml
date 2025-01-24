@@ -1,0 +1,9 @@
+services:
+  api_tests:
+    image: gitlab
+    build: .
+    volumes:
+      - .:/test_project
+    command: /bin/sh -c "pytest --alluredir=allure_results/ -v"
+    environment:
+      ENV: prod
