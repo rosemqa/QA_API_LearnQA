@@ -19,10 +19,10 @@ jobs:
         run: |
           docker compose up api_tests --exit-code-from api_tests || true
 
-#      - name: Copy history from gh-pages to allure_results
-#        run: |
-#          sudo mkdir -p allure_results/history
-#          sudo cp -R ./.github/gh-pages/history/* allure_results/history/
+      - name: Copy history from gh-pages to allure_results
+        run: |
+          sudo mkdir -p allure_results/history
+          sudo cp -R ./.github/gh-pages/history/* allure_results/history/
           
       - name: Generate Allure report
         run: |
