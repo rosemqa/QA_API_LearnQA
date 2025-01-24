@@ -1,0 +1,6 @@
+"Epic","Feature","Story","FAILED","BROKEN","PASSED","SKIPPED","UNKNOWN"
+"User cases","Login/auth user","","0","0","8","0","0"
+"User cases","Get user","","0","0","3","0","0"
+"User cases","Create user","","0","0","19","0","0"
+"User cases","Update user","","1","0","5","0","0"
+"User cases","Delete user","","0","0","3","0","0"
