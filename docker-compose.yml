@@ -1,9 +1,16 @@
 services:
   api_tests:
-    image: gitlab
+    image: tests
     build: .
     volumes:
       - .:/test_project
     command: /bin/sh -c "pytest --alluredir=allure_results/ -v"
     environment:
       ENV: prod
+
+  report:
+    image: tests
+    build: .
+    volumes:
+      - .:/test_project
+    command: /bin/sh -c "allure generate allure_results --clean -o allure_report"
