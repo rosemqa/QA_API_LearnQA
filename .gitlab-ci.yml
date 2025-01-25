@@ -12,14 +12,14 @@ run_tests:
     image: docker:24.0.5
     tags:
       - docker_dind
-#    before_script:
-#     - apk add curl jq
-#     - ARTIFACTS_CHECK_URL="https://$CI_SERVER_HOST/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_DEFAULT_BRANCH/download?job=pages&private_token=$PAT"
-#     - curl -k --location --output artifacts.zip $ARTIFACTS_CHECK_URL
-#     - unzip artifacts.zip
-#     - chmod -R 777 public
-#     - mkdir -p allure_results
-#     - cp -r public/history allure_results
+    before_script:
+     - apk add curl jq
+     - ARTIFACTS_CHECK_URL="https://$CI_SERVER_HOST/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_DEFAULT_BRANCH/download?job=pages&private_token=$PAT"
+     - curl -k --location --output artifacts.zip $ARTIFACTS_CHECK_URL
+     - unzip artifacts.zip
+     - chmod -R 777 public
+     - mkdir -p allure_results
+     - cp -r public/history allure_results
     script: 
         - docker compose up api_tests
     after_script:
