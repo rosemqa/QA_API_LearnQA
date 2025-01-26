@@ -2,45 +2,49 @@ stages:
   - tests
   - report
 
-default:
-  services:
-    - docker:24.0.5-dind
-
 run_tests:
-    stage: tests
-    when: manual
-    image: docker:24.0.5
-    tags:
-      - docker_dind
-    before_script:
-     - apk add curl jq
-     - ARTIFACTS_CHECK_URL="https://$CI_SERVER_HOST/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_DEFAULT_BRANCH/download?job=pages&private_token=$PAT"
-     - curl -k --location --output artifacts.zip $ARTIFACTS_CHECK_URL
-     - unzip artifacts.zip
-     - chmod -R 777 public
-     - mkdir -p allure_results
-     - cp -r public/history allure_results
-    script: 
-        - docker compose up api_tests
-    after_script:
-        - docker compose up report
-    artifacts:
-      paths:
-        - allure_report
-      when: always
-      expire_in: 5 days
+  stage: tests
+  when: manual
+  tags:
+    - docker
+  image: python:3.12.3-alpine3.20
+  before_script:
+    # install packages (curl, openjdk, allure)
+    - apk add openjdk21-jre curl tar
+    - curl -o allure-2.29.0.tgz -Ls https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.29.0/allure-commandline-2.29.0.tgz
+    - tar -zxvf allure-2.29.0.tgz -C /opt/
+    - ln -s /opt/allure-2.29.0/bin/allure /usr/bin/allure
+
+    # Copy history
+    - curl -k --location --output artifacts.zip "https://$CI_SERVER_HOST/api/v4/projects/$CI_PROJECT_ID/jobs/artifacts/$CI_DEFAULT_BRANCH/download?job=pages&private_token=$PAT"
+    - apk add unzip
+    - unzip artifacts.zip
+    - chmod -R 777 public
+    - mkdir -p allure_results
+    - cp -r public/history allure_results
+
+    - pip install -r requirements.txt
+  script:
+    - pytest --alluredir=allure_results -v
+  after_script:
+    - allure generate -c allure_results -o allure_report
+  allow_failure: true
+  artifacts:
+    when: always
+    paths:
+      - allure_report
+    expire_in: 5 day
 
 pages:
-    stage: report
-    tags:
-      - docker_dind
-    needs:
-      - run_tests
-    script:
-        - mkdir public 
-        - cp -r allure_report/* public
-    artifacts:
-      when: always
-      expire_in: never
-      paths:
-        - public
+  stage: report
+  needs:
+    - run_tests
+  tags:
+    - docker
+  script:
+    - mkdir public
+    - mv allure_report/* public
+  artifacts:
+    paths:
+      - public
+    when: always
