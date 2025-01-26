@@ -2,6 +2,9 @@ stages:
   - tests
   - report
 
+variables:
+  ENV: prod
+
 run_tests:
   stage: tests
   when: manual
