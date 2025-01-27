@@ -2,8 +2,8 @@ stages:
   - tests
   - report
 
-variables:
-  ENV: prod
+#variables:
+#  ENV: prod
 
 run_tests:
   stage: tests
@@ -27,6 +27,7 @@ run_tests:
     - cp -r public/history allure_results
 
     - pip install -r requirements.txt
+  environment: prod
   script:
     - pytest --alluredir=allure_results -v
   after_script:
